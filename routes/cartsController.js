@@ -24,33 +24,36 @@ router.get("/:id", (req, res) => {
 
 // POST new Cart
 router.post("/", (req, res) => {
-  // From frontend To Mongoose
+  if (!ObjectID.isValid(req.body.userId)) {
+    return res.status(400).send("ERROR userID unknow: " + req.body.userId);
+  }
+
   const newCart = new CartsModel({
     userId: req.body.userId,
   });
-  // From Mongoose To MongoDB
+
   newCart.save((err, data) => {
-    if (err) console.log("Post cart to db ERROR: " + err);
-    else res.send(data);
+    if (err) res.status(400).send(err);
+    else res.status(201).send(data);
   });
 });
 
-// UPDATE Cart (?? $SET -or- $PUSH ??)
+// ADD Product to Cart (?? $SET -or- $PUSH ??)
 router.put("/:id", (req, res) => {
-  // From frontend To Mongoose
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR cartID unknow: " + req.params.id);
   }
+
   const updateCart = {
     products: req.body.products,
   };
-  // From Mongoose To MongoDB
+
   CartsModel.findByIdAndUpdate(
     req.params.id,
-    { $push: updateCart }, // ?? $SET -or- $PUSH -or- $ADDTOSET ??
+    { $set: updateCart }, // ?? $SET -or- $PUSH -or- $ADDTOSET ??
     { new: true },
     (err, data) => {
-      if (err) console.log("Update cart ERROR: " + err);
+      if (err) res.status(400).send(err);
       else res.send(data);
     }
   );

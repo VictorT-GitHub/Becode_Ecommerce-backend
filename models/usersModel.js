@@ -71,20 +71,21 @@ UsersSchema.pre("save", async function (next) {
   next();
 });
 
-// PASSWORD BCRYPT LOGIN CHECK HOOK
+// PASSWORD & EMAIL LOGIN CHECK
 UsersSchema.statics.login = async function (email, password) {
+  if (!email) throw Error("Missing email");
+  if (!password) throw Error("Missing password");
+
   // query mongodb for find a user with this email
   const user = await this.findOne({ email });
-  // if this user exist, check if passwords are corresponding
-  if (user) {
-    const auth = await bcrypt.compare(password, user.password);
-    // if password is ok, funct return this user-id
-    if (auth) return user._id;
-    // if password not ok, funct throw error
-    throw Error("incorrect password");
-  }
-  // if email not ok, funct throw error
-  throw Error("incorrect email");
+  if (!user) throw Error("incorrect email");
+
+  // bcrypt check if passwords are corresponding
+  const auth = await bcrypt.compare(password, user.password);
+  if (!auth) throw Error("incorrect password");
+
+  // if everything ok, funct return the user id
+  return user._id;
 };
 
 // MONGOOSE MODEL

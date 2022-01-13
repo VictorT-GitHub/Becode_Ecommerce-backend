@@ -2,6 +2,7 @@ const router = require("express").Router();
 const ObjectID = require("mongoose").Types.ObjectId;
 
 const { UsersModel } = require("../models/usersModel.js");
+const { registerErrors } = require("../utils/errors.utils.js");
 
 // GET all Users
 router.get("/", (req, res) => {
@@ -24,7 +25,6 @@ router.get("/:id", (req, res) => {
 
 // POST new User (REGISTER)
 router.post("/register", (req, res) => {
-  // From frontend To Mongoose
   const newUser = new UsersModel({
     address: req.body.address,
     name: req.body.name,
@@ -34,10 +34,14 @@ router.post("/register", (req, res) => {
     phone: req.body.phone,
     admin: req.body.admin,
   });
-  // From Mongoose To MongoDB
+
   newUser.save((err, data) => {
-    if (err) console.log("Post user to db ERROR: " + err);
-    else res.status(201).send(data);
+    if (err) {
+      const errors = registerErrors(err);
+      res.status(400).send({ errors });
+    } else {
+      res.status(201).send(data._id);
+    }
   });
 });
 
