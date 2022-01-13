@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { isEmail } = require("validator");
 
-const UsersModel = mongoose.model("users", {
+// MONGOOSE SCHEMA
+const UsersSchema = new mongoose.Schema({
   address: {
     geolocation: {
       lat: {
@@ -39,6 +40,7 @@ const UsersModel = mongoose.model("users", {
     type: String,
     required: true,
     validate: [isEmail],
+    unique: true,
   },
   username: {
     type: String,
@@ -61,5 +63,31 @@ const UsersModel = mongoose.model("users", {
     default: false,
   },
 });
+
+// PASSWORD BCRYPT PRE HOOK
+UsersSchema.pre("save", async function (next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+// PASSWORD BCRYPT LOGIN CHECK HOOK
+UsersSchema.statics.login = async function (email, password) {
+  // query mongodb for find a user with this email
+  const user = await this.findOne({ email });
+  // if this user exist, check if passwords are corresponding
+  if (user) {
+    const auth = await bcrypt.compare(password, user.password);
+    // if password is ok, funct return this user-id
+    if (auth) return user._id;
+    // if password not ok, funct throw error
+    throw Error("incorrect password");
+  }
+  // if email not ok, funct throw error
+  throw Error("incorrect email");
+};
+
+// MONGOOSE MODEL
+const UsersModel = mongoose.model("users", UsersSchema);
 
 module.exports = { UsersModel };

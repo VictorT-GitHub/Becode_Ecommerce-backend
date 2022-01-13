@@ -47,7 +47,7 @@ router.put("/:id", (req, res) => {
   // From Mongoose To MongoDB
   CartsModel.findByIdAndUpdate(
     req.params.id,
-    { $push: updateCart }, // ?? $SET -or- $PUSH ??
+    { $push: updateCart }, // ?? $SET -or- $PUSH -or- $ADDTOSET ??
     { new: true },
     (err, data) => {
       if (err) console.log("Update cart ERROR: " + err);

@@ -37,7 +37,7 @@ router.post("/register", (req, res) => {
   // From Mongoose To MongoDB
   newUser.save((err, data) => {
     if (err) console.log("Post user to db ERROR: " + err);
-    else res.send(data);
+    else res.status(201).send(data);
   });
 });
 
