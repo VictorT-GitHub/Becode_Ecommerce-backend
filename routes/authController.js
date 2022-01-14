@@ -2,6 +2,7 @@ const router = require("express").Router();
 const jsonwebtoken = require("jsonwebtoken");
 
 const { UsersModel } = require("../models/usersModel.js");
+const { checkAuthToken } = require("../middleware/authMiddleware.js");
 const { loginErrors } = require("../utils/errors.utils.js");
 
 const maxAge = 3 * 24 * 60 * 60 * 1000;
@@ -28,6 +29,7 @@ router.post("/login", async (req, res) => {
 
 // LOGOUT (GET)
 router.get("/logout", (req, res) => {
+  res.locals.user_id = null; // inutile ?
   res.cookie("jwt", "", { maxAge: 1 });
   res.redirect("/products");
 });

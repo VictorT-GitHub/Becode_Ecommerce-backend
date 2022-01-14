@@ -14,7 +14,7 @@ router.get("/", checkAuthToken, (req, res) => {
 });
 
 // GET one User
-router.get("/:id", (req, res) => {
+router.get("/:id", checkAuthToken, (req, res) => {
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR userID unknow: " + req.params.id);
   }
@@ -25,7 +25,7 @@ router.get("/:id", (req, res) => {
 });
 
 // POST new User (REGISTER)
-router.post("/register", (req, res) => {
+router.post("/register", checkAuthToken, (req, res) => {
   const newUser = new UsersModel({
     address: req.body.address,
     name: req.body.name,
@@ -47,7 +47,7 @@ router.post("/register", (req, res) => {
 });
 
 // UPDATE User
-router.put("/:id", (req, res) => {
+router.put("/:id", checkAuthToken, (req, res) => {
   // From frontend To Mongoose
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR userID unknow: " + req.params.id);
@@ -73,7 +73,7 @@ router.put("/:id", (req, res) => {
 });
 
 // DELETE User
-router.delete("/:id", (req, res) => {
+router.delete("/:id", checkAuthToken, (req, res) => {
   // From frontend To Mongoose
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR userID unknow: " + req.params.id);

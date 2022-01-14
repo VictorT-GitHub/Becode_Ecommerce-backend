@@ -2,6 +2,10 @@ const router = require("express").Router();
 const ObjectID = require("mongoose").Types.ObjectId;
 
 const { ProductsModel } = require("../models/productsModel.js");
+const {
+  checkAuthToken,
+  checkIfAdmin,
+} = require("../middleware/authMiddleware.js");
 
 // GET all Products
 router.get("/", (req, res) => {
@@ -23,7 +27,7 @@ router.get("/:id", (req, res) => {
 });
 
 // POST new Product (ADMIN)
-router.post("/", (req, res) => {
+router.post("/", checkAuthToken, checkIfAdmin, (req, res) => {
   // From frontend To Mongoose
   const newProduct = new ProductsModel({
     title: req.body.title,
@@ -41,7 +45,7 @@ router.post("/", (req, res) => {
 });
 
 // UPDATE Product (ADMIN)
-router.put("/:id", (req, res) => {
+router.put("/:id", checkAuthToken, checkIfAdmin, (req, res) => {
   // From frontend To Mongoose
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR productID unknow: " + req.params.id);
@@ -67,7 +71,7 @@ router.put("/:id", (req, res) => {
 });
 
 // DELETE Product (ADMIN)
-router.delete("/:id", (req, res) => {
+router.delete("/:id", checkAuthToken, checkIfAdmin, (req, res) => {
   // From frontend To Mongoose
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR productID unknow: " + req.params.id);

@@ -2,9 +2,10 @@ const router = require("express").Router();
 const ObjectID = require("mongoose").Types.ObjectId;
 
 const { CartsModel } = require("../models/cartsModel.js");
+const { checkAuthToken } = require("../middleware/authMiddleware.js");
 
 // GET all Carts
-router.get("/", (req, res) => {
+router.get("/", checkAuthToken, (req, res) => {
   CartsModel.find((err, data) => {
     if (err) console.log("GET carts from db ERROR: " + err);
     else res.send(data);
@@ -12,7 +13,7 @@ router.get("/", (req, res) => {
 });
 
 // GET one Cart
-router.get("/:id", (req, res) => {
+router.get("/:id", checkAuthToken, (req, res) => {
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR cartID unknow: " + req.params.id);
   }
@@ -23,7 +24,7 @@ router.get("/:id", (req, res) => {
 });
 
 // POST new Cart
-router.post("/", (req, res) => {
+router.post("/", checkAuthToken, (req, res) => {
   if (!ObjectID.isValid(req.body.userId)) {
     return res.status(400).send("ERROR userID unknow: " + req.body.userId);
   }
@@ -39,7 +40,7 @@ router.post("/", (req, res) => {
 });
 
 // ADD Product to Cart (?? $SET -or- $PUSH ??)
-router.put("/:id", (req, res) => {
+router.put("/:id", checkAuthToken, (req, res) => {
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR cartID unknow: " + req.params.id);
   }
@@ -60,7 +61,7 @@ router.put("/:id", (req, res) => {
 });
 
 // DELETE Cart
-router.delete("/:id", (req, res) => {
+router.delete("/:id", checkAuthToken, (req, res) => {
   // From frontend To Mongoose
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR cartID unknow: " + req.params.id);
