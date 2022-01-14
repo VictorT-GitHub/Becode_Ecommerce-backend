@@ -2,10 +2,11 @@ const router = require("express").Router();
 const ObjectID = require("mongoose").Types.ObjectId;
 
 const { UsersModel } = require("../models/usersModel.js");
+const { checkAuthToken } = require("../middleware/authMiddleware.js");
 const { registerErrors } = require("../utils/errors.utils.js");
 
 // GET all Users
-router.get("/", (req, res) => {
+router.get("/", checkAuthToken, (req, res) => {
   UsersModel.find((err, data) => {
     if (err) console.log("GET users from db ERROR: " + err);
     else res.send(data);

@@ -29,7 +29,7 @@ router.post("/login", async (req, res) => {
 // LOGOUT (GET)
 router.get("/logout", (req, res) => {
   res.cookie("jwt", "", { maxAge: 1 });
-  res.redirect("/");
+  res.redirect("/products");
 });
 
 module.exports = router;

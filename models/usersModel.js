@@ -78,11 +78,11 @@ UsersSchema.statics.login = async function (email, password) {
 
   // query mongodb for find a user with this email
   const user = await this.findOne({ email });
-  if (!user) throw Error("incorrect email");
+  if (!user) throw Error("Incorrect email");
 
   // bcrypt check if passwords are corresponding
   const auth = await bcrypt.compare(password, user.password);
-  if (!auth) throw Error("incorrect password");
+  if (!auth) throw Error("Incorrect password");
 
   // if everything ok, funct return the user id
   return user._id;
