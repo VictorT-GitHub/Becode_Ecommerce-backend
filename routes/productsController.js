@@ -40,7 +40,7 @@ router.post("/", checkAuthToken, checkIfAdmin, (req, res) => {
   // From Mongoose To MongoDB
   newProduct.save((err, data) => {
     if (err) console.log("Post product to db ERROR: " + err);
-    else res.send(data);
+    else res.status(201).send(data);
   });
 });
 

@@ -22,7 +22,6 @@ const checkAuthToken = (req, res, next) => {
 
 const checkIfAdmin = async (req, res, next) => {
   const user = await UsersModel.findById(res.locals.user_id);
-  console.log(user);
   if (user.admin == false) return res.status(401).send("Access Denied");
   next();
 };
