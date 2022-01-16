@@ -7,7 +7,7 @@ const { checkAuthToken } = require("../middleware/authMiddleware.js");
 // GET all Carts
 router.get("/", checkAuthToken, (req, res) => {
   CartsModel.find((err, data) => {
-    if (err) console.log("GET carts from db ERROR: " + err);
+    if (err) res.status(400).send("GET carts ERROR: " + err);
     else res.send(data);
   });
 });
@@ -18,19 +18,20 @@ router.get("/:id", checkAuthToken, (req, res) => {
     return res.status(400).send("ERROR cartID unknow: " + req.params.id);
   }
   CartsModel.findById(req.params.id, (err, data) => {
-    if (err) console.log("GET cart from db ERROR: " + err);
+    if (err) res.status(400).send("GET cart ERROR: " + err);
     else res.send(data);
   });
 });
 
-// POST new Cart
+// POST new Cart "VEROUILLED"
 router.post("/", checkAuthToken, (req, res) => {
-  if (!ObjectID.isValid(req.body.userId)) {
-    return res.status(400).send("ERROR userID unknow: " + req.body.userId);
-  }
+  // -- READ ME --
+  // A user can only create a cart for himself with
+  // his [res.locals.user_id] which is located in the jwt-cookie.
+  // So this POST request doesnt need any req.body frontend inputs.
 
   const newCart = new CartsModel({
-    userId: req.body.userId,
+    userId: res.locals.user_id,
   });
 
   newCart.save((err, data) => {
@@ -54,7 +55,7 @@ router.put("/:id", checkAuthToken, (req, res) => {
     { $set: updateCart }, // ?? $SET -or- $PUSH -or- $ADDTOSET ??
     { new: true },
     (err, data) => {
-      if (err) res.status(400).send(err);
+      if (err) res.status(400).send("Update cart-products ERROR: " + err);
       else res.send(data);
     }
   );
@@ -68,7 +69,7 @@ router.delete("/:id", checkAuthToken, (req, res) => {
   }
   // From Mongoose To MongoDB
   CartsModel.findByIdAndDelete(req.params.id, (err, data) => {
-    if (err) console.log("Delete cart ERROR: " + err);
+    if (err) res.status(400).send("Delete cart ERROR: " + err);
     else res.send(data);
   });
 });

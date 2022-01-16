@@ -13,6 +13,7 @@ const CartsModel = mongoose.model("carts", {
     {
       productId: {
         type: String,
+        unique: true,
       },
       quantity: {
         type: Number,

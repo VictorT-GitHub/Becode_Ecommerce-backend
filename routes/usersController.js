@@ -8,18 +8,20 @@ const { registerErrors } = require("../utils/errors.utils.js");
 // GET all Users
 router.get("/", checkAuthToken, (req, res) => {
   UsersModel.find((err, data) => {
-    if (err) console.log("GET users from db ERROR: " + err);
+    if (err) res.status(400).send("GET users ERROR: " + err);
     else res.send(data);
   }).select("-password");
 });
 
-// GET one User
-router.get("/:id", checkAuthToken, (req, res) => {
-  if (!ObjectID.isValid(req.params.id)) {
-    return res.status(400).send("ERROR userID unknow: " + req.params.id);
-  }
-  UsersModel.findById(req.params.id, (err, data) => {
-    if (err) console.log("GET user from db ERROR: " + err);
+// GET one User "VEROUILLED"
+router.get("/myprofil", checkAuthToken, (req, res) => {
+  // -- READ ME --
+  // A user can only read his one data, selected with
+  // his [res.locals.user_id] which is located in the jwt-cookie.
+  // So this GET request doesnt need any req.params.id in the URL.
+
+  UsersModel.findById(res.locals.user_id, (err, data) => {
+    if (err) res.status(400).send("GET user ERROR: " + err);
     else res.send(data);
   });
 });
@@ -48,10 +50,10 @@ router.post("/register", checkAuthToken, (req, res) => {
 
 // UPDATE User
 router.put("/:id", checkAuthToken, (req, res) => {
-  // From frontend To Mongoose
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR userID unknow: " + req.params.id);
   }
+
   const updateUser = {
     address: req.body.address,
     name: req.body.name,
@@ -60,13 +62,13 @@ router.put("/:id", checkAuthToken, (req, res) => {
     password: req.body.password,
     phone: req.body.phone,
   };
-  // From Mongoose To MongoDB
+
   UsersModel.findByIdAndUpdate(
     req.params.id,
     { $set: updateUser },
     { new: true },
     (err, data) => {
-      if (err) console.log("Update user ERROR: " + err);
+      if (err) res.status(400).send("Update user ERROR: " + err);
       else res.send(data);
     }
   );
@@ -74,13 +76,12 @@ router.put("/:id", checkAuthToken, (req, res) => {
 
 // DELETE User
 router.delete("/:id", checkAuthToken, (req, res) => {
-  // From frontend To Mongoose
   if (!ObjectID.isValid(req.params.id)) {
     return res.status(400).send("ERROR userID unknow: " + req.params.id);
   }
-  // From Mongoose To MongoDB
+
   UsersModel.findByIdAndDelete(req.params.id, (err, data) => {
-    if (err) console.log("Delete user ERROR: " + err);
+    if (err) res.status(400).send("Delete user ERROR: " + err);
     else res.send(data);
   });
 });
