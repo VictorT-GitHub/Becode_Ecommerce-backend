@@ -14,7 +14,7 @@ router.get("/", checkAuthToken, (req, res) => {
 });
 
 // GET one User "VEROUILLED"
-router.get("/account/:id", checkAuthToken, (req, res) => {
+router.post("/account/:id", checkAuthToken, (req, res) => {
   // -- READ ME --
   // A user can only read his one data, selected with
   // his [res.locals.user_id] which is located in the jwt-cookie.
