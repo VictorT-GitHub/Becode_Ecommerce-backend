@@ -23,7 +23,7 @@ router.post("/account/:id", checkAuthToken, (req, res) => {
   UsersModel.findById(req.params.id, (err, data) => {
     if (err) res.status(400).send("GET user ERROR: " + err);
     else res.send(data);
-  });
+  }).select("-password");
 });
 
 // POST new User (REGISTER)
