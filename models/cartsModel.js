@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const CartsModel = mongoose.model("carts", {
-  userId: {
+  userid: {
     type: String,
     required: true,
   },
