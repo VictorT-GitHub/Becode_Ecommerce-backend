@@ -14,13 +14,13 @@ router.get("/", checkAuthToken, (req, res) => {
 });
 
 // GET one User "VEROUILLED"
-router.get("/account", checkAuthToken, (req, res) => {
+router.get("/account/:id", checkAuthToken, (req, res) => {
   // -- READ ME --
   // A user can only read his one data, selected with
   // his [res.locals.user_id] which is located in the jwt-cookie.
   // So this GET request doesnt need any req.params.id in the URL.
 
-  UsersModel.findById(res.locals.user_id, (err, data) => {
+  UsersModel.findById(req.params.id, (err, data) => {
     if (err) res.status(400).send("GET user ERROR: " + err);
     else res.send(data);
   });
