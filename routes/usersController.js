@@ -27,7 +27,7 @@ router.get("/myprofil", checkAuthToken, (req, res) => {
 });
 
 // POST new User (REGISTER)
-router.post("/register", checkAuthToken, (req, res) => {
+router.post("/register", (req, res) => {
   const newUser = new UsersModel({
     address: req.body.address,
     name: req.body.name,
