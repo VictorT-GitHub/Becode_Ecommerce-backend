@@ -9,7 +9,7 @@ const usersRouter = require("./routes/usersController.js");
 const authRouter = require("./routes/authController.js");
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 5000;
 
 // Connection to MongoDB Atlas database
 require("./config/dbConfig");
