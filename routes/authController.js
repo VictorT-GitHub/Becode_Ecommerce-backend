@@ -2,7 +2,6 @@ const router = require("express").Router();
 const jsonwebtoken = require("jsonwebtoken");
 
 const { UsersModel } = require("../models/usersModel.js");
-const { checkAuthToken } = require("../middleware/authMiddleware.js");
 const { loginErrors } = require("../utils/errors.utils.js");
 
 const maxAge = 3 * 24 * 60 * 60 * 1000;

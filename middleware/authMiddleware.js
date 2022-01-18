@@ -3,6 +3,7 @@ const jsonwebtoken = require("jsonwebtoken");
 const { UsersModel } = require("../models/usersModel.js");
 
 const checkAuthToken = (req, res, next) => {
+  console.log(req.cookie.jwt);
   const token = req.cookie.jwt;
   if (!token) {
     res.locals.user_id = null;
