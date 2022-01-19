@@ -3,66 +3,85 @@ const bcrypt = require("bcrypt");
 const { isEmail } = require("validator");
 
 // MONGOOSE SCHEMA
-const UsersSchema = new mongoose.Schema({
-  address: {
-    geolocation: {
-      lat: {
+const UsersSchema = new mongoose.Schema(
+  {
+    address: {
+      geolocation: {
+        lat: {
+          type: String,
+        },
+        long: {
+          type: String,
+        },
+      },
+      city: {
         type: String,
       },
-      long: {
+      street: {
+        type: String,
+      },
+      number: {
+        type: Number,
+      },
+      zipcode: {
         type: String,
       },
     },
-    city: {
+    name: {
+      firstname: {
+        type: String,
+        required: true,
+      },
+      lastname: {
+        type: String,
+        required: true,
+      },
+    },
+    email: {
       type: String,
+      required: true,
+      validate: [isEmail],
+      unique: true,
     },
-    street: {
+    username: {
       type: String,
+      required: true,
+      unique: true,
     },
-    number: {
-      type: Number,
-    },
-    zipcode: {
-      type: String,
-    },
-  },
-  name: {
-    firstname: {
+    password: {
       type: String,
       required: true,
     },
-    lastname: {
+    phone: {
       type: String,
-      required: true,
+    },
+    admin: {
+      type: Boolean,
+      default: false,
+    },
+    cart: {
+      type: [
+        {
+          productid: {
+            type: String,
+            unique: true, // fonctionne pas
+            required: true, // fonctionne
+          },
+          quantity: {
+            type: Number,
+            default: 0, // fonctionne
+          },
+          lastUpdate: {
+            type: Date,
+            default: Date.now, // fonctionne
+          },
+        },
+      ],
+      required: true, // fonctionne pas
     },
   },
-  email: {
-    type: String,
-    required: true,
-    validate: [isEmail],
-    unique: true,
-  },
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: String,
-  },
-  inscriptionDate: {
-    type: Date,
-    default: Date.now,
-  },
-  admin: {
-    type: Boolean,
-    default: false,
-  },
-});
+  { timestamps: true }
+);
 
 // PASSWORD BCRYPT PRE HOOK
 UsersSchema.pre("save", async function (next) {

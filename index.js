@@ -25,7 +25,7 @@ app.get("/", (req, res) => res.redirect("/products"));
 
 // Routers
 app.use("/products", productsRouter);
-app.use("/carts", cartsRouter);
+// app.use("/carts", cartsRouter);
 app.use("/users", usersRouter);
 app.use("/auth", authRouter);
 

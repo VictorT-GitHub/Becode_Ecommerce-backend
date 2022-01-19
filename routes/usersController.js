@@ -2,19 +2,22 @@ const router = require("express").Router();
 const ObjectID = require("mongoose").Types.ObjectId;
 
 const { UsersModel } = require("../models/usersModel.js");
-const { checkAuthToken } = require("../middleware/authMiddleware.js");
-const { registerErrors } = require("../utils/errors.utils.js");
+const {
+  checkAuthToken,
+  checkIfAdmin,
+} = require("../middleware/authMiddleware.js");
 
+// ------------ CRUD USER ------------
 // GET all Users
-router.get("/", checkAuthToken, (req, res) => {
+router.get("/all-users", checkAuthToken, checkIfAdmin, (req, res) => {
   UsersModel.find((err, data) => {
     if (err) res.status(400).send("GET users ERROR: " + err);
     else res.send(data);
   }).select("-password");
 });
 
-// GET one User "VEROUILLED"
-router.get("/account/", checkAuthToken, (req, res) => {
+// GET one User ("VEROUILLED")
+router.get("/myaccount/", checkAuthToken, (req, res) => {
   // -- READ ME --
   // A user can only read his one data, selected with
   // his [res.locals.user_id] which is located in the jwt-cookie.
@@ -24,28 +27,6 @@ router.get("/account/", checkAuthToken, (req, res) => {
     if (err) res.status(400).send("GET user ERROR: " + err);
     else res.send(data);
   }).select("-password");
-});
-
-// POST new User (REGISTER)
-router.post("/register", (req, res) => {
-  const newUser = new UsersModel({
-    address: req.body.address,
-    name: req.body.name,
-    email: req.body.email,
-    username: req.body.username,
-    password: req.body.password,
-    phone: req.body.phone,
-    admin: req.body.admin,
-  });
-
-  newUser.save((err, data) => {
-    if (err) {
-      const errors = registerErrors(err);
-      res.status(400).send({ errors });
-    } else {
-      res.status(201).send(data._id);
-    }
-  });
 });
 
 // UPDATE User
@@ -84,6 +65,78 @@ router.delete("/:id", checkAuthToken, (req, res) => {
     if (err) res.status(400).send("Delete user ERROR: " + err);
     else res.send(data);
   });
+});
+
+// ------------ CRUD PRODUCTS IN CART ------------
+// ADD one Product to Cart
+router.put("/add-product/:id", checkAuthToken, (req, res) => {
+  if (!ObjectID.isValid(req.params.id)) {
+    return res.status(400).send("ERROR userId unknow: " + req.params.id);
+  }
+
+  const newProduct = {
+    cart: {
+      productid: req.body.productid, // Pourquoi c'est pas obligé ?
+      quantity: req.body.quantity,
+    },
+  };
+
+  UsersModel.findByIdAndUpdate(
+    req.params.id,
+    { $push: newProduct },
+    { new: true },
+    (err, data) => {
+      if (err) res.status(400).send("Add product to Cart ERROR: " + err);
+      else res.send(data);
+    }
+  );
+});
+
+// Modify one Product in the Cart
+router.put("/modify-product/:id", checkAuthToken, (req, res) => {
+  const { _id, productid, quantity } = req.body;
+
+  if (!ObjectID.isValid(req.params.id) || !ObjectID.isValid(_id)) {
+    return res.status(400).send("ERROR ID unknow");
+  }
+
+  UsersModel.findById(req.params.id, (err, user) => {
+    if (err) return res.status(400).send("Update cart-product ERROR: " + err);
+
+    const productToModify = user.cart.find((product) => product._id == _id);
+    if (!productToModify) return res.status(404).send("Product not found");
+
+    productToModify.productid = productid;
+    productToModify.quantity = quantity;
+
+    return user.save((err) => {
+      if (err) return res.status(400).send("Save cart-product ERROR: " + err);
+      return res.send(user);
+    });
+  });
+});
+
+// Delete one Product in the Cart
+router.put("/delete-product/:id", checkAuthToken, (req, res) => {
+  if (!ObjectID.isValid(req.params.id) || !ObjectID.isValid(req.body._id)) {
+    return res.status(400).send("ERROR ID unknow");
+  }
+
+  const productToDelete = {
+    cart: {
+      _id: req.body._id,
+    },
+  };
+
+  UsersModel.findByIdAndUpdate(
+    req.params.id,
+    { $pull: productToDelete },
+    { new: true },
+    (err, data) => {
+      if (err) res.status(400).send("Delete cart-product ERROR: " + err);
+      else res.send(data);
+    }
+  );
 });
 
 module.exports = router;

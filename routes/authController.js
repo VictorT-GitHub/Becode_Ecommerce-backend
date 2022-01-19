@@ -2,9 +2,32 @@ const router = require("express").Router();
 const jsonwebtoken = require("jsonwebtoken");
 
 const { UsersModel } = require("../models/usersModel.js");
-const { loginErrors } = require("../utils/errors.utils.js");
+const { registerErrors, loginErrors } = require("../utils/errors.utils.js");
 
 const maxAge = 3 * 24 * 60 * 60 * 1000;
+
+// REGISTER new User (POST)
+router.post("/register", (req, res) => {
+  const newUser = new UsersModel({
+    address: req.body.address,
+    name: req.body.name,
+    email: req.body.email,
+    username: req.body.username,
+    password: req.body.password,
+    phone: req.body.phone,
+    admin: req.body.admin,
+    cart: [], // inutile ?
+  });
+
+  newUser.save((err, data) => {
+    if (err) {
+      const errors = registerErrors(err);
+      res.status(400).send({ errors });
+    } else {
+      res.status(201).send(data._id);
+    }
+  });
+});
 
 // JWT LOGIN (POST)
 router.post("/login", async (req, res) => {

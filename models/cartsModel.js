@@ -5,7 +5,7 @@ const CartsModel = mongoose.model("carts", {
     type: String,
     required: true,
   },
-  date: {
+  lastUpdate: {
     type: Date,
     default: Date.now,
   },
