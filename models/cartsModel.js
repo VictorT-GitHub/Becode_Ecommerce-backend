@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const CartsModel = mongoose.model("carts", {
-  userid: {
+  userId: {
     type: String,
     required: true,
   },
@@ -9,17 +9,19 @@ const CartsModel = mongoose.model("carts", {
     type: Date,
     default: Date.now,
   },
-  products: [
-    {
-      productId: {
-        type: String,
-        unique: true,
+  products: {
+    type: [
+      {
+        productid: {
+          type: String,
+          // unique: true, // DONT WORK
+          // required: true, // DONT WORK
+        },
+        quantity: Number,
       },
-      quantity: {
-        type: Number,
-      },
-    },
-  ],
+    ],
+    // required: true, // DONT WORK FINE
+  },
 });
 
 module.exports = { CartsModel };
