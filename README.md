@@ -6,4 +6,4 @@ It allowed me to learn no-SQL databases with **MongoDB**, and to expand my knowl
 
 **MongoDB** - **Mongoose** - **Node.js** - **Express.js** - **JWT**
 
-~~Deployment -> ://fake-store-api-clone.herokuapp.com/~~ (Heroku is not free anymore. Coming soon on another platform. 🚀)
+Deployment -> ~~**://fake-store-api-clone.herokuapp.com/**~~ (Heroku is not free anymore. Coming soon on another platform. 🚀)
